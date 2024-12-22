@@ -49,7 +49,7 @@ module.exports = function (source, sourceMaps, meta) {
 
         // minify js with terser
         if (opts.minimize) {
-            template = terser.minify(template, opts.terserOptions).code + '';
+            template = (await terser.minify(template, opts.terserOptions)).code ?? '';
         }
 
         callback(null, 'module.exports = ' + template, sourceMaps, meta);
