@@ -9,6 +9,7 @@ export default [
     ...Config,
     {
         languageOptions: {
+            ecmaVersion: 2020,
             globals: {
                 ...globals.node,
             },
