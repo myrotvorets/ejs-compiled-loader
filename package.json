@@ -1,6 +1,6 @@
 {
   "name": "@myrotvorets/ejs-compiled-loader",
-  "version": "4.0.0-dev",
+  "version": "4.0.0",
   "description": "EJS webpack loader (without frontend dependencies)",
   "main": "index.js",
   "scripts": {
