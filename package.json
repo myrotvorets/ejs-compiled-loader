@@ -55,5 +55,8 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "files": [
+    "index.js"
+  ]
 }
