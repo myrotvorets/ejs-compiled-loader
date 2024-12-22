@@ -1,38 +1,57 @@
-var ejs = require('ejs');
-var path = require('path');
-var merge = require('merge');
-var utils = require('loader-utils');
-var terser = require('terser');
-var htmlmin = require('html-minifier');
+const path = require('node:path');
+const ejs = require('ejs');
+const terser = require('terser');
+const htmlmin = require('html-minifier-terser');
 
-module.exports = function (source) {
-  this.cacheable && this.cacheable();
+/**
+ * @typedef {Object} Options
+ * @property {boolean} client
+ * @property {boolean} compileDebug
+ * @property {boolean} minimize
+ * @property {boolean} beautify
+ * @property {boolean} htmlmin
+ * @property {import('html-minifier-terser').Options} htmlminOptions
+ * @property {import('terser').MinifyOptions} terserOptions
+ */
 
-  // wepkack3: options
-  var options = utils.getOptions(this);
-  
-  // merge opts from defaults,opts and query 
-  var opts = merge({
-    client: true,
-    compileDebug: !!this.minimize,
-    minimize: (typeof this.minimize === 'boolean') ? this.minimize : false,
-    beautify: false,
-    htmlmin: (typeof this.htmlmin === 'boolean') ? this.htmlmin : false,
-    htmlminOptions: {}
-  }, options);
+/**
+ * @type {import('webpack').LoaderDefinitionFunction<Options>}
+ * @this {import('webpack').LoaderContext<Options>}
+ */
+module.exports = function (source, sourceMaps, meta) {
+    const callback = this.async();
+    (async () => {
+        this.cacheable();
+        const options = this.getOptions();
 
-  // minify html
-  if (opts.htmlmin) source = htmlmin.minify(source, opts.htmlminOptions);
+        /** @type {Options} */
+        const defaults = {
+            client: true,
+            compileDebug: this.mode === 'development',
+            minimize: this.mode === 'production',
+            beautify: false,
+            htmlmin: this.mode === 'production',
+            htmlminOptions: {},
+            terserOptions: {},
+        };
 
-  // compile template
-  var template = ejs.compile(source, merge(opts, {
-    filename: path.relative(process.cwd(), this.resourcePath),
-    webpack: this
-  })).toString();
+        const opts = { ...defaults, ...options };
 
-  // minify js with terser
-  if (opts.minimize) template = terser.minify(template, { output: { beautify: opts.beautify }}).code;
+        // minify html
+        if (opts.htmlmin) {
+            source = await htmlmin.minify(source, opts.htmlminOptions);
+        }
 
-  return 'module.exports = ' + template;
+        // compile template
+        let template = ejs
+            .compile(source, { ...opts, filename: path.relative(process.cwd(), this.resourcePath) })
+            .toString();
 
+        // minify js with terser
+        if (opts.minimize) {
+            template = terser.minify(template, opts.terserOptions).code + '';
+        }
+
+        callback(null, 'module.exports = ' + template, sourceMaps, meta);
+    })().catch((err) => callback(err));
 };
