@@ -3,5 +3,5 @@
     "extends": [
         "local>myrotvorets/.github:renovate-config"
     ],
-    "renovateFork": true
+    "forkProcessing": "enabled"
 }
