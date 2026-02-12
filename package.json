@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/myrotvorets/ejs-compiled-loader",
   "dependencies": {
-    "ejs": "^3.1.10",
+    "ejs": "^4.0.0",
     "html-minifier-terser": "^7.2.0",
     "terser": "^5.37.0"
   },
