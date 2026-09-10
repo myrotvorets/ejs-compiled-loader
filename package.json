@@ -47,7 +47,7 @@
     "@myrotvorets/eslint-config-myrotvorets-ts": "^3.0.2",
     "assert": "^2.1.0",
     "webpack": "^5.97.1",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^7.0.0"
   },
   "directories": {
     "test": "test"
